@@ -1,0 +1,177 @@
+
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Calculator</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #111318;
+  color: white;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.calculator {
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+}
+h2 {
+  text-align: center;
+  color: #ff9f43;
+}
+#display {
+  width: 100%;
+  height: 100px;
+  background: #252932;
+  border: none;
+  border-radius: 15px;
+  color: white;
+  font-size: 38px;
+  text-align: right;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+button {
+  height: 70px;
+  border: none;
+  border-radius: 15px;
+  background: #292e38;
+  color: white;
+  font-size: 25px;
+}
+.operator { background: #ff9f43; color: #111; }
+.clear { background: #e74c3c; }
+.equal {
+  background: #2ecc71;
+  grid-column: span 2;
+}
+button:active { opacity: 0.7; }
+</style>
+</head>
+<body>
+
+<div class="calculator">
+  <h2>My Calculator</h2>
+  <input id="display" value="0" readonly>
+
+  <div class="buttons">
+    <button class="clear" onclick="clearDisplay()">C</button>
+    <button onclick="deleteLast()">⌫</button>
+    <button class="operator" onclick="choose('/')">÷</button>
+    <button class="operator" onclick="choose('*')">×</button>
+
+    <button onclick="number('7')">7</button>
+    <button onclick="number('8')">8</button>
+    <button onclick="number('9')">9</button>
+    <button class="operator" onclick="choose('-')">−</button>
+
+    <button onclick="number('4')">4</button>
+    <button onclick="number('5')">5</button>
+    <button onclick="number('6')">6</button>
+    <button class="operator" onclick="choose('+')">+</button>
+
+    <button onclick="number('1')">1</button>
+    <button onclick="number('2')">2</button>
+    <button onclick="number('3')">3</button>
+    <button onclick="decimal()">.</button>
+
+    <button onclick="number('0')">0</button>
+    <button class="equal" onclick="calculate()">=</button>
+  </div>
+</div>
+
+<script>
+const display = document.getElementById('display');
+let current = '0';
+let first = null;
+let operator = null;
+let reset = false;
+
+function show() {
+  display.value = current;
+}
+
+function number(n) {
+  if (reset || current === '0') {
+    current = n;
+    reset = false;
+  } else {
+    current += n;
+  }
+  show();
+}
+
+function decimal() {
+  if (reset) {
+    current = '0';
+    reset = false;
+  }
+  if (!current.includes('.')) current += '.';
+  show();
+}
+
+function clearDisplay() {
+  current = '0';
+  first = null;
+  operator = null;
+  reset = false;
+  show();
+}
+
+function deleteLast() {
+  if (reset) return;
+  current = current.length > 1 ? current.slice(0,-1) : '0';
+  if (current === '-') current = '0';
+  show();
+}
+
+function choose(op) {
+  if (operator !== null && !reset) calculate();
+  first = Number(current);
+  operator = op;
+  reset = true;
+}
+
+function calculate() {
+  if (operator === null || reset) return;
+
+  const second = Number(current);
+  let result;
+
+  if (operator === '+') result = first + second;
+  if (operator === '-') result = first - second;
+  if (operator === '*') result = first * second;
+  if (operator === '/') {
+    if (second === 0) {
+      current = 'Error';
+      first = null;
+      operator = null;
+      reset = true;
+      show();
+      return;
+    }
+    result = first / second;
+  }
+
+  current = String(Number(result.toPrecision(12)));
+  first = null;
+  operator = null;
+  reset = true;
+  show();
+}
+</script>
+
+</body>
+</html>
